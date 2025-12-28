@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import * as XLSX from 'xlsx';
-import excelFile from './assets/DPL Vote Election25-27.xlsx';
+import electionFile from './assets/DPL Vote Election25-27.xlsx';
+import regularEmployeesFile from './assets/Main File of Regular Employees PHA.xlsx';
 import swordGif from './assets/sword.gif';
 
 const SearchPage = () => {
@@ -12,37 +13,54 @@ const SearchPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(excelFile);
-        const arrayBuffer = await response.arrayBuffer();
-        const workbook = XLSX.read(arrayBuffer, { type: 'buffer' });
+        const [electionResponse, regularResponse] = await Promise.all([
+          fetch(electionFile),
+          fetch(regularEmployeesFile)
+        ]);
 
-        // The main data is in the "Master" sheet.
-        const sheetName = "Master";
-        const worksheet = workbook.Sheets[sheetName];
+        const electionBuffer = await electionResponse.arrayBuffer();
+        const regularBuffer = await regularResponse.arrayBuffer();
 
-        if (!worksheet) {
-            console.error(`Sheet "${sheetName}" not found in the Excel file.`);
-            return;
-        }
+        // --- Process First File: DPL Vote Election25-27.xlsx ---
+        const workbook1 = XLSX.read(electionBuffer, { type: 'buffer' });
+        const sheetName1 = "Master";
+        const worksheet1 = workbook1.Sheets[sheetName1];
+        const rows1: any[][] = XLSX.utils.sheet_to_json(worksheet1, { header: 1 });
+        console.log(rows1)
+        const jsonData1 = rows1.slice(1).map(row => ({
+          'Sr No': row[0],
+          'CNIC': row[1],
+          'DOB': row[2],
+          'Name': row[3],
+          'Parentage': row[4],
+          'Directorate': row[7],
+          'Designation': 'N/A',
+          'Emp Code': 'N/A',
+        }));
 
-        // Since there are no headers, read the data as an array of arrays.
-        const rows: any[][] = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+        // --- Process Second File: Main File of Regular Employees PHA.xlsx ---
+        const workbook2 = XLSX.read(regularBuffer, { type: 'buffer' });
+        const sheetName2 = "P workman";
+        const worksheet2 = workbook2.Sheets[sheetName2];
+        const rows2: any[][] = XLSX.utils.sheet_to_json(worksheet2, { header: 1 });
+        console.log(rows2)
 
-        // Manually define the headers in the correct order.
-        const headers = ['Sr No', 'CNIC NO.', 'D.O.B', 'Name\'s', 'Parentage', 'Directorate'];
+        const jsonData2 = rows2.slice(1).map(row => ({
+          'Sr No': row[0],
+          'Emp Code': row[1],
+          'Name': row[2],
+          'Parentage': row[3],
+          'Designation': row[4],
+          'DOB': row[5],
+          'Directorate': row[7],
+          'CNIC': row[8],
+        }));
+        console.log(jsonData2)
+        const combinedData = [...jsonData1, ...jsonData2];
+        setData(combinedData);
 
-        // Convert the array of arrays into an array of objects.
-        const jsonData = rows.map(row => {
-            const rowData: { [key: string]: any } = {};
-            headers.forEach((header, index) => {
-                rowData[header] = row[index];
-            });
-            return rowData;
-        });
-
-        setData(jsonData);
       } catch (error) {
-        console.error("Error reading the Excel file:", error);
+        console.error("Error reading or processing Excel files:", error);
       }
     };
 
@@ -50,24 +68,36 @@ const SearchPage = () => {
   }, []);
 
   const handleSearch = () => {
-    // Normalize search term to be lowercase and without dashes.
     const normalizedTerm = searchTerm.trim().toLowerCase().replace(/-/g, '');
 
     if (!normalizedTerm) {
-        navigate('/results', { state: { filteredData: [] } });
-        return;
+      navigate('/results', { state: { filteredData: [] } });
+      return;
     }
 
     const filteredData = data.filter(item => {
-        // For each item, check if any of its values match the normalized search term.
-        return Object.values(item).some(value => {
-            if (value === null || value === undefined) {
-                return false;
+      return Object.values(item).some(value => {
+        if (value === null || value === undefined) {
+          return false;
+        }
+
+        if (typeof value === 'number' && value > 10000) { 
+            try {
+                const date = XLSX.SSF.parse_date_code(value);
+                if (date && date.y > 1900 && date.y < 2100) {
+                    const dateString = `${date.m}/${date.d}/${date.y}`;
+                    const normalizedValue = dateString.toLowerCase().replace(/-/g, '');
+                    if (normalizedValue.includes(normalizedTerm)) return true;
+                }
+            } catch (e) {
+              console.log(e)
+                // Not a date, handled as regular number below
             }
-            // Normalize the data value in the same way as the search term.
-            const normalizedValue = value.toString().trim().toLowerCase().replace(/-/g, '');
-            return normalizedValue.includes(normalizedTerm);
-        });
+        }
+
+        const normalizedValue = value.toString().trim().toLowerCase().replace(/-/g, '');
+        return normalizedValue.includes(normalizedTerm);
+      });
     });
     
     navigate('/results', { state: { filteredData } });
