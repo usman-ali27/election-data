@@ -49,17 +49,24 @@ const SearchPage = () => {
   }, []);
 
   const handleSearch = () => {
-    const term = searchTerm.trim().toLowerCase();
+    // Normalize search term to be lowercase and without dashes.
+    const normalizedTerm = searchTerm.trim().toLowerCase().replace(/-/g, '');
 
-    if (!term) {
+    if (!normalizedTerm) {
         navigate('/results', { state: { filteredData: [] } });
         return;
     }
 
     const filteredData = data.filter(item => {
-        return Object.values(item).some(value =>
-            value?.toString().trim().toLowerCase().includes(term)
-        );
+        // For each item, check if any of its values match the normalized search term.
+        return Object.values(item).some(value => {
+            if (value === null || value === undefined) {
+                return false;
+            }
+            // Normalize the data value in the same way as the search term.
+            const normalizedValue = value.toString().trim().toLowerCase().replace(/-/g, '');
+            return normalizedValue.includes(normalizedTerm);
+        });
     });
     
     navigate('/results', { state: { filteredData } });
