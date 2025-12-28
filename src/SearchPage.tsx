@@ -16,7 +16,22 @@ const SearchPage = () => {
         const workbook = XLSX.read(arrayBuffer, { type: 'buffer' });
         const sheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[sheetName];
-        const jsonData: any[] = XLSX.utils.sheet_to_json(worksheet);
+        
+        // Since there are no headers, read the data as an array of arrays
+        const rows: any[][] = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+
+        // Manually define the headers in the correct order
+        const headers = ['Sr No', 'CNIC NO.', 'D.O.B', 'Name\'s', 'Parentage', 'Directorate'];
+
+        // Convert the array of arrays into an array of objects
+        const jsonData = rows.map(row => {
+            const rowData: { [key: string]: any } = {};
+            headers.forEach((header, index) => {
+                rowData[header] = row[index];
+            });
+            return rowData;
+        });
+
         setData(jsonData);
       } catch (error) {
         console.error("Error reading the Excel file:", error);
@@ -29,16 +44,13 @@ const SearchPage = () => {
   const handleSearch = () => {
     const term = searchTerm.trim().toLowerCase();
 
-    // If the search term is empty after trimming, show no results.
     if (!term) {
         navigate('/results', { state: { filteredData: [] } });
         return;
     }
 
     const filteredData = data.filter(item => {
-        // Search through all values of the item
         return Object.values(item).some(value =>
-            // Ensure value is not null/undefined, convert to string, trim, and then compare
             value?.toString().trim().toLowerCase().includes(term)
         );
     });
