@@ -14,16 +14,23 @@ const SearchPage = () => {
         const response = await fetch(excelFile);
         const arrayBuffer = await response.arrayBuffer();
         const workbook = XLSX.read(arrayBuffer, { type: 'buffer' });
-        const sheetName = workbook.SheetNames[0];
+
+        // The main data is in the "Master" sheet.
+        const sheetName = "Master";
         const worksheet = workbook.Sheets[sheetName];
-        
-        // Since there are no headers, read the data as an array of arrays
+
+        if (!worksheet) {
+            console.error(`Sheet "${sheetName}" not found in the Excel file.`);
+            return;
+        }
+
+        // Since there are no headers, read the data as an array of arrays.
         const rows: any[][] = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
 
-        // Manually define the headers in the correct order
+        // Manually define the headers in the correct order.
         const headers = ['Sr No', 'CNIC NO.', 'D.O.B', 'Name\'s', 'Parentage', 'Directorate'];
 
-        // Convert the array of arrays into an array of objects
+        // Convert the array of arrays into an array of objects.
         const jsonData = rows.map(row => {
             const rowData: { [key: string]: any } = {};
             headers.forEach((header, index) => {
