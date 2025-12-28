@@ -1,4 +1,3 @@
-import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 const ResultsPage = () => {
@@ -24,15 +23,15 @@ const ResultsPage = () => {
                 <table>
                     <thead>
                         <tr>
-                            {headers.map(key => (
+                            {headers.map((key: string) => (
                                 <th key={key}>{key}</th>
                             ))}
                         </tr>
                     </thead>
                     <tbody>
-                        {filteredData.length > 0 ? filteredData.map((row, index) => (
+                        {filteredData.length > 0 ? filteredData.map((row: { [key: string]: any }, index: number) => (
                             <tr key={index}>
-                                {headers.map(header => (
+                                {headers.map((header: string) => (
                                     <td key={header}>{row[header]}</td>
                                 ))}
                             </tr>
