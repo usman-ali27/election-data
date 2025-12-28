@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import * as XLSX from 'xlsx';
 import electionFile from './assets/DPL Vote Election25-27.xlsx';
-import regularEmployeesFile from './assets/Main File of Regular Employees PHA.xlsx';
+import regularEmployeesFile from './assets/Regular Emp Voter Election List 2025-27.xlsx';
 import swordGif from './assets/sword.gif';
 
 const SearchPage = () => {
@@ -26,7 +26,6 @@ const SearchPage = () => {
         const sheetName1 = "Master";
         const worksheet1 = workbook1.Sheets[sheetName1];
         const rows1: any[][] = XLSX.utils.sheet_to_json(worksheet1, { header: 1 });
-        console.log(rows1)
         const jsonData1 = rows1.slice(1).map(row => ({
           'Sr No': row[0],
           'CNIC': row[1],
@@ -40,22 +39,20 @@ const SearchPage = () => {
 
         // --- Process Second File: Main File of Regular Employees PHA.xlsx ---
         const workbook2 = XLSX.read(regularBuffer, { type: 'buffer' });
-        const sheetName2 = "P workman";
+        const sheetName2 = "Master File";
         const worksheet2 = workbook2.Sheets[sheetName2];
         const rows2: any[][] = XLSX.utils.sheet_to_json(worksheet2, { header: 1 });
         console.log(rows2)
-
         const jsonData2 = rows2.slice(1).map(row => ({
           'Sr No': row[0],
           'Emp Code': row[1],
           'Name': row[2],
           'Parentage': row[3],
           'Designation': row[4],
-          'DOB': row[5],
-          'Directorate': row[7],
-          'CNIC': row[8],
+          'DOB': row[6],
+          'Directorate': row[8],
+          'CNIC': row[10],
         }));
-        console.log(jsonData2)
         const combinedData = [...jsonData1, ...jsonData2];
         setData(combinedData);
 
