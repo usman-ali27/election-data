@@ -11,7 +11,8 @@ body {
 .search-page {
   padding: 2rem;
   min-height: 100vh;
-  color: #333;
+  width: 100vw;
+  color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -22,7 +23,8 @@ body {
   max-width: 600px;
   margin: 0 auto;
   padding: 3rem;
-  background: rgba(255, 255, 255, 0.9);
+  background: #4A4A4A;
+  text-align: center;
   border-radius: 15px;
   box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
   backdrop-filter: blur(10px);
@@ -32,7 +34,7 @@ body {
 
 .search-title {
   text-align: center;
-  color: #1e3a8a;
+  color: #fff;
   margin-bottom: 2rem;
   font-size: 2.5rem;
   font-weight: 700;
@@ -45,7 +47,7 @@ body {
 .input-label {
   display: block;
   margin-bottom: 0.5rem;
-  color: #374151;
+  color: #fff;
   font-weight: 500;
 }
 
@@ -56,6 +58,8 @@ body {
   border: 1px solid #d1d5db;
   font-size: 1rem;
   box-sizing: border-box; /* Ensures padding doesn't affect width */
+  background-color: #333;
+  color: white;
 }
 
 .search-button {
@@ -73,6 +77,24 @@ body {
 
 .search-button:hover {
     background: #1d4ed8;
+}
+
+.signature-container {
+    margin-top: 2rem;
+}
+
+.built-by {
+    font-size: 1rem;
+    color: #ccc;
+    margin: 0;
+}
+
+.signature {
+    font-family: 'Great Vibes', cursive;
+    font-size: 2.5rem;
+    color: #ffd700;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    margin: 0;
 }
 
 /* Results Page Styles */

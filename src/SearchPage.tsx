@@ -1,16 +1,13 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Lottie from "lottie-react";
-import { LottieRef } from 'lottie-react';
 import * as XLSX from 'xlsx';
 import excelFile from './assets/DPL Vote Election25-27.xlsx';
-import swordAnimation from './assets/sword-animation.json';
+import swordGif from './assets/sword.gif';
 
 const SearchPage = () => {
   const [data, setData] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const navigate = useNavigate();
-  const swordRef = useRef<LottieRef>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -53,10 +50,6 @@ const SearchPage = () => {
   }, []);
 
   const handleSearch = () => {
-    if (swordRef.current) {
-        swordRef.current.play();
-    }
-
     // Normalize search term to be lowercase and without dashes.
     const normalizedTerm = searchTerm.trim().toLowerCase().replace(/-/g, '');
 
@@ -83,13 +76,7 @@ const SearchPage = () => {
   return (
     <div className="search-page">
         <div className="search-container">
-            <Lottie 
-                lottieRef={swordRef} 
-                animationData={swordAnimation} 
-                style={{ width: 150, height: 150, marginBottom: 20 }} 
-                loop={false}
-                autoplay={false}
-            />
+            <img src={swordGif} alt="Sword Animation" style={{ width: 150, height: 150, marginBottom: 20 }} />
             <h1 className="search-title">Search Records</h1>
             <div className="input-group">
                 <label className="input-label">Search by CNIC or Name</label>
@@ -102,6 +89,10 @@ const SearchPage = () => {
                 />
             </div>
             <button onClick={handleSearch} className="search-button">Search</button>
+            <div className="signature-container">
+                <p className="built-by">Built By:</p>
+                <p className="signature">Usman Bhatti</p>
+            </div>
         </div>
     </div>
   );
