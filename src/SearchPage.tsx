@@ -27,15 +27,22 @@ const SearchPage = () => {
   }, []);
 
   const handleSearch = () => {
-    const filteredData = data.filter(item => {
-        const term = searchTerm.toLowerCase();
-        if (!term) return false;
+    const term = searchTerm.trim().toLowerCase();
 
+    // If the search term is empty after trimming, show no results.
+    if (!term) {
+        navigate('/results', { state: { filteredData: [] } });
+        return;
+    }
+
+    const filteredData = data.filter(item => {
         // Search through all values of the item
         return Object.values(item).some(value =>
-            value?.toString().toLowerCase().includes(term)
+            // Ensure value is not null/undefined, convert to string, trim, and then compare
+            value?.toString().trim().toLowerCase().includes(term)
         );
     });
+    
     navigate('/results', { state: { filteredData } });
   };
 
