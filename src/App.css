@@ -205,3 +205,62 @@ td {
         font-size: 1.8rem;
     }
 }
+
+/* Print-Specific Styles */
+@media print {
+  /* Hide non-essential elements */
+  .button-group, .search-page {
+    display: none;
+  }
+
+  /* Ensure the results page and container take up the full space */
+  body {
+    background: none;
+  }
+  
+  .results-page {
+    padding: 0;
+    min-height: auto;
+    background-color: #fff;
+  }
+
+  .results-container {
+    box-shadow: none;
+    border: none;
+    padding: 1rem;
+    max-width: 100%;
+    border-radius: 0;
+  }
+
+  /* Style the table for printing */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12pt; /* Use points for print */
+  }
+
+  thead tr {
+    background-color: #eee; /* Lighter background for print */
+    color: #000;
+  }
+  
+  th, td {
+    border: 1px solid #ccc;
+    padding: 0.5rem;
+    color: #000;
+  }
+  
+  tbody tr:nth-of-type(even) {
+      background-color: transparent;
+  }
+
+  .results-title {
+      font-size: 18pt;
+      margin-bottom: 1rem;
+  }
+
+  /* Prevent page breaks inside rows */
+  tr {
+    page-break-inside: avoid;
+  }
+}
